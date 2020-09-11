@@ -7,9 +7,6 @@
 int gameState = 0;
 
 Color playerColors[6] = {RED, ORANGE, YELLOW, GREEN, BLUE, MAGENTA};
-byte playerColorFlags[6] = {'C_RED', 'C_ORANGE', 'C_YELLOW', 'C_GREEN', 
-							'C_BLUE', 'C_MAGENTA'};
-byte currentColor;
 int colorArrayLen = 6;
 int colorCycleCounter = 0;
 int fullCycleCounter = 0;
@@ -20,14 +17,25 @@ int lockTimerInterval = 3000; // 3 Seconds
 
 enum Flags
 {
+	C_RED,
+	C_ORANGE,
+	C_YELLOW,
+	C_GREEN,
+	C_BLUE,
+	C_MAGENTA,
 	LOCK,
 	RESET,
 };
+
+byte playerColorFlags[6] = {C_RED, C_ORANGE, C_YELLOW, C_GREEN, 
+							C_BLUE, C_MAGENTA};
+byte currentColor;
 
 void setup()
 {
 	randomize();
 	shuffleColors();
+	gameState = 0;
 }
 
 void loop()
@@ -37,6 +45,7 @@ void loop()
 	{
 		case 0:
 		// Idle/blank state, awaiting button presses.
+			setValueSentOnAllFaces(RESET);
 			setColor(WHITE);
 			if (buttonSingleClicked())
 			{
@@ -98,8 +107,10 @@ void loop()
 			}
 			if (buttonLongPressed())
 			{
+				colorCycleCounter = 0;
+				fullCycleCounter = 0;
 				setValueSentOnAllFaces(RESET);
-				gameState = 0;
+				setup();
 			}
 		break;
 	}
