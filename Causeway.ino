@@ -17,6 +17,7 @@ int lockTimerInterval = 3000; // 3 Seconds
 
 enum Flags
 {
+	EMPTY,	//Clear value sent
 	C_RED,
 	C_ORANGE,
 	C_YELLOW,
@@ -45,7 +46,7 @@ void loop()
 	{
 		case 0:
 		// Idle/blank state, awaiting button presses.
-			setValueSentOnAllFaces(RESET);
+			setValueSentOnAllFaces(EMPTY);
 			setColor(WHITE);
 			if (buttonSingleClicked())
 			{
@@ -56,16 +57,17 @@ void loop()
 		case 1:
 		// Cycle through colors on button press.
 		// Set timer for lock check.
+		
+			setColor(playerColors[colorCycleCounter]);
 			currentColor = playerColorFlags[colorCycleCounter];
 			setValueSentOnAllFaces(currentColor);
-			setColor(playerColors[colorCycleCounter]);
 			
 			FOREACH_FACE(f)
 			{
 				if ((getLastValueReceivedOnFace(f) == currentColor))
 				{
-					//timerRunning = true;
-					//lockTimer.set(lockTimerInterval);
+					timerRunning = true;
+					lockTimer.set(lockTimerInterval);
 					gameState = 2;
 				}
 			}
@@ -86,16 +88,16 @@ void loop()
 			}
 			if (timerRunning && lockTimer.isExpired())
 			{
-				//timerRunning = false;
+				timerRunning = false;
 				gameState = 2;
 			}
 		break;
 
 		case 2:
 		// Lock state
-			setColorOnFace(WHITE, 0);
-			setColorOnFace(WHITE, 2);
-			setColorOnFace(WHITE, 4);
+			setColorOnFace(OFF, 0);
+			setColorOnFace(OFF, 2);
+			setColorOnFace(OFF, 4);
 			setValueSentOnAllFaces(LOCK);
 			FOREACH_FACE(f)
 			{
