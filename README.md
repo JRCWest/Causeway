@@ -19,7 +19,9 @@ Each player takes one piece from the land mass.  Single pressing the button will
 ## GAMEPLAY
 All players begin at the same time, attaching their initial piece to the larger land mass.  Pressing the button of any other piece will cycle through it's colors, and you claim land by connecting pieces of the same color.  But be warned - each piece has had the order of those colors shuffled!  Players may move pieces around on the board as they see fit, but the board must remain one solid mass.
 
-When two or more pieces of the same color are connected, a "lockdown" timer will appear.  The pieces must stay connected and of the same color for the duration of the timer before the land can officially be claimed for your clan.  Protect your land during this vulnerable period at all costs - the more times the colors are cycled through, the shorter this timer will last.
+When two or more pieces of the same color are connected, a "lock-down" timer will begin ticking.  The pieces must stay connected and of the same color for the duration of the timer before the land can officially be claimed for your clan.  Protect your land during this vulnerable period at all costs - *the more times the colors are cycled through, the shorter this timer will last*.
 
 ## WIN CONDITION
 The game ends when all pieces have been "locked-down".  At this point, no player may move pieces.  Players each count the pieces of land they managed to connect - whoever holds the largest territory is named the winner.
+
+Long press any locked tiles to return it to the default "white" color.
