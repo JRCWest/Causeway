@@ -12,8 +12,12 @@ int colorCycleCounter = 0;
 int fullCycleCounter = 0;
 
 Timer lockTimer;
+Timer lockAnimTimer;
+int lockAnimCurrentFace = 0;
 bool timerRunning;
+int lockTimerAnimInterval = 250; // For stepping animation
 int lockTimerInterval = 3000; // 3 Seconds
+int lockingFace;
 
 enum Flags
 {
@@ -30,7 +34,9 @@ enum Flags
 
 byte playerColorFlags[6] = {C_RED, C_ORANGE, C_YELLOW, C_GREEN, 
 							C_BLUE, C_MAGENTA};
+byte neighborColorFlags[6] = {};
 byte currentColor;
+//byte matchingFaces[];
 
 void setup()
 {
@@ -58,55 +64,88 @@ void loop()
 		// Cycle through colors on button press.
 		// Set timer for lock check.
 		
-			setColor(playerColors[colorCycleCounter]);
+			//setColor(playerColors[colorCycleCounter]);
 			currentColor = playerColorFlags[colorCycleCounter];
 			setValueSentOnAllFaces(currentColor);
 			
 			FOREACH_FACE(f)
 			{
-				if ((getLastValueReceivedOnFace(f) == currentColor))
+				if ((getLastValueReceivedOnFace(f) == currentColor) && !timerRunning)
 				{
+					//neighborColorFlags[f] = getLastValueRecievedOnFace(f);
+					lockingFace = f;
 					timerRunning = true;
 					lockTimer.set(lockTimerInterval);
-					gameState = 2;
+				}
+				// Stop timer if "locking face" changes or expires.
+				if ((getLastValueReceivedOnFace(lockingFace) != currentColor) ||
+					(isValueReceivedOnFaceExpired(lockingFace)))
+				{	
+						timerRunning = false;
+						setColor(playerColors[colorCycleCounter]);
+						gameState = 1;
 				}
 			}
 
+			//if ((buttonSingleClicked()) || 
+			//	(getLastValueReceivedOnFace(lockingFace) != currentColor) ||
+			//	(isValueReceivedOnFaceExpired(lockingFace)))
 			if (buttonSingleClicked())
 			{
 				timerRunning = false;
 				if (colorCycleCounter == (colorArrayLen - 1))
 				{
+					// Track how many times through the cycle we've gone
 					colorCycleCounter = 0;
 					fullCycleCounter += 1;
-					lockTimerInterval -= 500;
+					// Increase speed of locking timer
+					if (lockTimerInterval > 1000)
+					{
+						lockTimerInterval -= 500;
+						lockTimerAnimInterval -= 100;
+					}
 				}
 				else
 				{
 					colorCycleCounter += 1;
 				}
 			}
-			if (timerRunning && lockTimer.isExpired())
+			if (timerRunning)
 			{
-				timerRunning = false;
-				gameState = 2;
+				lockAnimLoop(playerColors[colorCycleCounter], lockTimerAnimInterval);
+				if (lockTimer.isExpired())
+				{
+					timerRunning = false;
+					gameState = 2;
+				}
+			}
+			else
+			{
+				setColor(playerColors[colorCycleCounter]);
 			}
 		break;
 
 		case 2:
 		// Lock state
-			setColorOnFace(OFF, 0);
-			setColorOnFace(OFF, 2);
-			setColorOnFace(OFF, 4);
-			setValueSentOnAllFaces(LOCK);
 			FOREACH_FACE(f)
 			{
+				// Set "Locked" pattern"
+				if (f % 2 == 0)
+				{
+					setColorOnFace(playerColors[colorCycleCounter], f);
+				}
+				else
+				{
+					setColorOnFace(OFF,f);
+				}
+				// Listen for a RESET flag
 				if (getLastValueReceivedOnFace(f) == RESET)
 				{
 					setValueSentOnAllFaces(RESET);
 					gameState = 0;
 				}
 			}
+			// Send out RESET flag if long pressed in this state.
 			if (buttonLongPressed())
 			{
 				colorCycleCounter = 0;
@@ -121,6 +160,7 @@ void loop()
 
 void shuffleColors()
 {
+	// Randomize both the order of the color and byte flag arrays.
 	for (int i=0; i < colorArrayLen-1; i++)
 	{
 		int n = random(5);  // Integer from 0 to questionCount-1
@@ -134,3 +174,16 @@ void shuffleColors()
 		playerColorFlags[i] = temp_flag;
 	}
 }
+
+void lockAnimLoop(Color currentColor, int interval)
+{
+	if (lockAnimTimer.isExpired())
+	{
+		setColor(OFF);
+		lockAnimCurrentFace += 1;
+		if (lockAnimCurrentFace == 5) { lockAnimCurrentFace = 0;}
+		setColorOnFace(currentColor, lockAnimCurrentFace);
+		lockAnimTimer.set(interval);
+	}
+}
+
