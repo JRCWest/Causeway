@@ -29,14 +29,14 @@ enum Flags
 	C_BLUE,
 	C_MAGENTA,
 	LOCK,
-	RESET,
+	RESET
 };
 
 byte playerColorFlags[6] = {C_RED, C_ORANGE, C_YELLOW, C_GREEN, 
 							C_BLUE, C_MAGENTA};
-byte neighborColorFlags[6] = {};
+//byte neighborColorFlags[6] = {};
 byte currentColor;
-//byte matchingFaces[];
+byte matchingFaces[6] = {0,0,0,0,0,0};
 
 void setup()
 {
@@ -68,28 +68,42 @@ void loop()
 			currentColor = playerColorFlags[colorCycleCounter];
 			setValueSentOnAllFaces(currentColor);
 			
+			// Update matching colors.
 			FOREACH_FACE(f)
 			{
-				if ((getLastValueReceivedOnFace(f) == currentColor) && !timerRunning)
+				// Compare to other matching faces, skipping empty.
+				if (getLastValueReceivedOnFace(f) == 0 && matchingFaces[f] == 0)
 				{
-					//neighborColorFlags[f] = getLastValueRecievedOnFace(f);
-					lockingFace = f;
-					timerRunning = true;
-					lockTimer.set(lockTimerInterval);
+					continue;
 				}
-				// Stop timer if "locking face" changes or expires.
-				if ((getLastValueReceivedOnFace(lockingFace) != currentColor) ||
-					(isValueReceivedOnFaceExpired(lockingFace)))
-				{	
-						timerRunning = false;
-						setColor(playerColors[colorCycleCounter]);
-						gameState = 1;
+				// If face matches but expired, or new flag detected, reset timer.
+				if ((isValueReceivedOnFaceExpired(f)) || 
+					(getLastValueReceivedOnFace(f) != matchingFaces[f]))
+				{
+					matchingFaces[f] = 0;
+				}
+
+				// Detect matching faces, begin lock timer.
+				if ((getLastValueReceivedOnFace(f) == currentColor) && 
+					!isValueReceivedOnFaceExpired(f))
+				{
+					matchingFaces[f] = getLastValueReceivedOnFace(f);
 				}
 			}
-
-			//if ((buttonSingleClicked()) || 
-			//	(getLastValueReceivedOnFace(lockingFace) != currentColor) ||
-			//	(isValueReceivedOnFaceExpired(lockingFace)))
+			
+			// Run timer if matching faces exist, else stop timer.
+			if (matchingFacesCounter() == 0)
+			{
+				timerRunning = false;
+				setColor(playerColors[colorCycleCounter]);
+			}
+			else if (matchingFacesCounter() != 0 && !timerRunning) 
+			{
+				timerRunning = true;
+				lockTimer.set(lockTimerInterval);
+			}
+		
+			// Change color on button press.
 			if (buttonSingleClicked())
 			{
 				timerRunning = false;
@@ -110,6 +124,8 @@ void loop()
 					colorCycleCounter += 1;
 				}
 			}
+			
+			// Display lockign animation and wait for timer to expire & lock.
 			if (timerRunning)
 			{
 				lockAnimLoop(playerColors[colorCycleCounter], lockTimerAnimInterval);
@@ -148,14 +164,33 @@ void loop()
 			// Send out RESET flag if long pressed in this state.
 			if (buttonLongPressed())
 			{
-				colorCycleCounter = 0;
-				fullCycleCounter = 0;
+				resetVariables();
 				setValueSentOnAllFaces(RESET);
 				setup();
 			}
 		break;
 	}
 
+}
+
+int matchingFacesCounter()
+{
+	int matchingFacesCount = 0;
+	for (int i = 0; i < 6; i++)
+	{
+		if (matchingFaces[i] == 0) { continue; }
+		else { matchingFacesCount++; }
+	}
+	return matchingFacesCount;
+}
+
+void resetVariables()
+{
+	colorCycleCounter = 0;
+	fullCycleCounter = 0;
+	lockAnimCurrentFace = 0;
+	lockTimerAnimInterval = 250;
+	lockTimerInterval = 3000; 
 }
 
 void shuffleColors()
