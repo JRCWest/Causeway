@@ -22,6 +22,6 @@ All players begin at the same time, attaching their initial piece to the larger 
 When two or more pieces of the same color are connected, a "lock-down" timer will begin ticking.  The pieces must stay connected and of the same color for the duration of the timer before the land can officially be claimed for your clan.  Protect your land during this vulnerable period at all costs - *the more times the colors are cycled through, the shorter this timer will last*.
 
 ## WIN CONDITION
-The game ends when all pieces have been "locked-down".  At this point, no player may move pieces.  Players each count the pieces of land they managed to connect - whoever holds the largest territory is named the winner.
+The game ends when all pieces have been "locked-down".  At this point, no player may move pieces.  Players each count the pieces of land they managed to connect - whoever holds the single largest connected territory is named the winner.
 
 Long press any locked tiles to return it to the default "white" color.
