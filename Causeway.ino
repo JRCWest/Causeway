@@ -4,6 +4,16 @@
 *
 *******************************/
 
+// TODO:
+//	- Iron out rules:
+//		+ Players seperate tiles onto the table in random groupings,
+//			like islands waiting to be conqured.
+//		+ Players must get their colors to match in order to claim land.
+//		+ **** Players can connect land masses together, but not separate them? ****
+//
+//	- Win Condition:
+//		+ Player with largest singular connected land mass in their color wins.
+
 int gameState = 0;
 
 Color playerColors[6] = {RED, ORANGE, YELLOW, GREEN, BLUE, MAGENTA};
@@ -32,7 +42,7 @@ enum Flags
 	RESET
 };
 
-byte playerColorFlags[6] = {C_RED, C_ORANGE, C_YELLOW, C_GREEN, 
+byte playerColorFlags[6] = {C_RED, C_ORANGE, C_YELLOW, C_GREEN,
 							C_BLUE, C_MAGENTA};
 //byte neighborColorFlags[6] = {};
 byte currentColor;
@@ -63,11 +73,11 @@ void loop()
 		case 1:
 		// Cycle through colors on button press.
 		// Set timer for lock check.
-		
+
 			//setColor(playerColors[colorCycleCounter]);
 			currentColor = playerColorFlags[colorCycleCounter];
 			setValueSentOnAllFaces(currentColor);
-			
+
 			// Update matching colors.
 			FOREACH_FACE(f)
 			{
@@ -76,33 +86,34 @@ void loop()
 				{
 					continue;
 				}
-				// If face matches but expired, or new flag detected, reset timer.
-				if ((isValueReceivedOnFaceExpired(f)) || 
-					(getLastValueReceivedOnFace(f) != matchingFaces[f]))
-				{
-					matchingFaces[f] = 0;
-				}
 
 				// Detect matching faces, begin lock timer.
-				if ((getLastValueReceivedOnFace(f) == currentColor) && 
+				if ((getLastValueReceivedOnFace(f) == currentColor) &&
 					!isValueReceivedOnFaceExpired(f))
 				{
 					matchingFaces[f] = getLastValueReceivedOnFace(f);
 				}
+
+				// If face matches but expired, or new flag detected, reset timer.
+				if ((isValueReceivedOnFaceExpired(f)) ||
+					(getLastValueReceivedOnFace(f) != currentColor))
+				{
+					matchingFaces[f] = 0;
+				}
 			}
-			
+
 			// Run timer if matching faces exist, else stop timer.
 			if (matchingFacesCounter() == 0)
 			{
 				timerRunning = false;
 				setColor(playerColors[colorCycleCounter]);
 			}
-			else if (matchingFacesCounter() != 0 && !timerRunning) 
+			else if (matchingFacesCounter() != 0 && !timerRunning)
 			{
 				timerRunning = true;
 				lockTimer.set(lockTimerInterval);
 			}
-		
+
 			// Change color on button press.
 			if (buttonSingleClicked())
 			{
@@ -124,7 +135,7 @@ void loop()
 					colorCycleCounter += 1;
 				}
 			}
-			
+
 			// Display lockign animation and wait for timer to expire & lock.
 			if (timerRunning)
 			{
@@ -190,7 +201,7 @@ void resetVariables()
 	fullCycleCounter = 0;
 	lockAnimCurrentFace = 0;
 	lockTimerAnimInterval = 250;
-	lockTimerInterval = 3000; 
+	lockTimerInterval = 3000;
 }
 
 void shuffleColors()
@@ -201,10 +212,10 @@ void shuffleColors()
 		int n = random(5);  // Integer from 0 to questionCount-1
    		Color temp_color = playerColors[n];
 		byte temp_flag = playerColorFlags[n];
-   		
+
 		playerColors[n] =  playerColors[i];
 		playerColorFlags[n] = playerColorFlags[i];
-   		
+
 		playerColors[i] = temp_color;
 		playerColorFlags[i] = temp_flag;
 	}
@@ -221,4 +232,3 @@ void lockAnimLoop(Color currentColor, int interval)
 		lockAnimTimer.set(interval);
 	}
 }
-
