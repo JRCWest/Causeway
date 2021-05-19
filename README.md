@@ -17,13 +17,15 @@ Arrange blinks in one large group.  This will be your battleground.  The shape o
 Each player takes one piece from the land mass.  Single pressing the button will cycle through the 6 available colors.  Players choose one of these colors to represent their "clan".
 
 ## GAMEPLAY
-All players begin at the same time, attaching their initial piece to the larger land mass.  Pressing the button of any other piece will cycle through it's colors, and you claim land by connecting pieces of the same color.  But be warned - each piece has had the order of those colors shuffled!
+All players begin at the same time, attaching their initial piece to the larger land mass.  Pressing the button of any other piece (*including those of another player's color*) will cycle through it's colors, and you claim land by connecting pieces of the same color.  But be warned - each piece has had the order of those colors shuffled!
 
 <p align="center">
   <img src="./images/colorcycle.png"/>
 </p>
 
 When two or more pieces of the same color are connected, a "lock-down" timer will begin ticking.  The pieces must stay connected and of the same color for the duration of the timer before the land can officially be claimed for your clan.  Protect your land during this vulnerable period at all costs - *the more times the colors are cycled through, the shorter this timer will last*.
+
+Once a tile has been locked, it's color can no longer be changed.
 
 <p align="center">
   <img src="./images/locking.png"/>
