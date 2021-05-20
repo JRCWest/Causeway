@@ -9,7 +9,7 @@ You are lumbering giants, battling for tiny territory!  Shape the landscape to m
 |------------------|:-----------------:|:--------------------:|-----------------:|
 | 12 +           | 2 - 6             |  ~ 5-10 minutes    | 12 & Up          |
 
-There are no turns in Causeway - each giant must battle for land in real time.  Aside from that, there are no rules.  Use whatever tactics you have at your disposal to claim the new land (or the land of your enemies).
+There are no turns in Causeway - each giant must battle for land in real time.  Use whatever tactics you have at your disposal to claim the new land (or the land of your enemies).
 
 ## SETUP
 Arrange blinks in one large group.  This will be your battleground.  The shape of the group doesn't matter too much, but a more symmetrical shape may be helpful for keeping the game as fair as possible.  All pieces should start off as white.
